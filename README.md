@@ -1,11 +1,12 @@
-# CSCI-330
+### CSCI-330
 Database Project
 MuskieCo
 
 
 ## Nicolas Salvador
 - Implemented Product and Discount operations
-## Product Operations
+- Transaction management on database operations to ensure ACID properties. Each transation uses conn.begin() to start the transaction, conn.commit() to commit the transaction, and then conn.rollback() to undo transactions if it were to fail in and erach the Exception. 
+# Product Operations
 1. Enter Product
 - Enter product details to be added to Product table.
 - Input : ProductID, name, buy_price, sell_price
