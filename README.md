@@ -71,3 +71,44 @@ specific product
 3.  Operation: Customer Total Purchase Report 
 - Input: CustomerID, date_range 
 - Output: Total purchase amount
+
+## Nurbol Kanatbek uulu
+- Implemented Customer and Staff operations
+- Each operation is divided into seperated functions
+
+## Customer Operations
+1. Enter New Customer
+- Enter Customer details to be added to Customer table
+- Input: CurstomerID, first_name, last_name, email, phone, home_address, active_status
+- Output: Confirmation
+3. Update Existing Customer
+- Change specific field of a Customer
+- Input: CustomerID, then new changes
+- Output: Confirmation
+4. Search Customer
+- Find specific customer
+- Input: CustomerID
+- Output: Customer Information
+5. Delete Customer
+- Delete specific customer
+- Input: CustomerID
+- Output: Confirmed deletion of customer
+
+## Staff Operations
+1. Enter New Staff
+- Enter Customer details to be added to Customer table
+- Input: StaffID, first_name, last_name, age, home_address, job_title, phone, email, time_of_employment, StoreID
+- Output: Confirmation
+3. Update Existing Staff
+- Change specific field of a Staff
+- Input: StaffID, then new changes
+- Output: Confirmation
+4. Search Staff
+- Find specific staff
+- Input: StaffID
+- Output: Staff Information
+5. Delete Staff
+- Delete specific staff
+- Input: StaffID
+- Output: Confirmed deletion of staff
+
