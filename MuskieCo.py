@@ -12,9 +12,31 @@ def main():
         # call the method corresponding to that operation
         if choice == 1:
             product_operation(conn)
+            
         elif choice == 2:
             discount_operation(conn)
+            
         elif choice == 3:
+            sub_choice = get_store_edit_choice()
+        if sub_choice == 1:
+            enter_store(conn)
+        if sub_choice == 2:
+            update_store(conn)
+        elif sub_choice == 3:
+            delete_store(conn)
+        elif sub_choice == 4:
+            search_store(conn)
+            
+        elif choice == 4:
+            sub_choice = reports_choice()
+        if sub_choice == 1:
+                sales_report(conn)
+        elif sub_choice == 2:
+                inventory_report(conn)
+        elif sub_choice == 3:
+                customer_report(conn)
+            
+        elif choice == 5:
             break
     # close DB connection
     conn.close()
@@ -52,9 +74,34 @@ def get_user_choice():
                                 "Which task would you like to perform?\n" +
                                 "1. Enter/Update/Delete/Search for a Product\n" +
                                 "2. Enter/Update/Delete/Search for a Discount\n" +
-                                "3. Exit.\n"
+                                "3. Enter/Update/Delete/Search for a Store\n" +
+                                "4. Reports\n" +
+                                "5. Exit.\n"
                     ))
 
+    return choice
+
+def get_store_edit_choice():
+    choice = -1
+    while choice < 1 or choice > 4:
+        choice = int(input(
+            "How would you like to edit the store?\n"
+            "1. Enter store\n"
+            "2. Update store\n"
+            "3. Delete store\n"
+            "4. Search store\n"
+        ))
+    return choice
+
+def reports_choice():
+    choice = -1
+    while choice < 1 or choice > 3:
+        choice = int(input(
+            "Select a report:\n"
+            "1. Sales Report\n"
+            "2. Store/Product Inventory Report\n"
+            "3. Customer Total Purchase Report\n"
+        ))
     return choice
 
 def read_string(prompt):
