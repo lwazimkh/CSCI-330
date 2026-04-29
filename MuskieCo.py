@@ -51,7 +51,7 @@ def get_user_choice():
     """
 
     choice = -1
-    while choice < 1 or choice > 3:
+    while choice < 1 or choice > 5:
         choice = int(input("Welcome to MuskieCo!\n" +
                                 "Which task would you like to perform?\n" +
                                 "1. Enter/Update/Delete/Search for a Product\n" +
