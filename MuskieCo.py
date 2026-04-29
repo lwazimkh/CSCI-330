@@ -12,30 +12,12 @@ def main():
         # call the method corresponding to that operation
         if choice == 1:
             product_operation(conn)
-            
         elif choice == 2:
             discount_operation(conn)
-            
         elif choice == 3:
-            sub_choice = get_store_edit_choice()
-        if sub_choice == 1:
-            enter_store(conn)
-        if sub_choice == 2:
-            update_store(conn)
-        elif sub_choice == 3:
-            delete_store(conn)
-        elif sub_choice == 4:
-            search_store(conn)
-            
+            get_store_edit_choice(conn)
         elif choice == 4:
-            sub_choice = reports_choice()
-        if sub_choice == 1:
-                sales_report(conn)
-        elif sub_choice == 2:
-                inventory_report(conn)
-        elif sub_choice == 3:
-                customer_report(conn)
-            
+            reports_choice(conn)
         elif choice == 5:
             break
     # close DB connection
@@ -81,7 +63,7 @@ def get_user_choice():
 
     return choice
 
-def get_store_edit_choice():
+def get_store_edit_choice(conn):
     choice = -1
     while choice < 1 or choice > 4:
         choice = int(input(
@@ -91,9 +73,16 @@ def get_store_edit_choice():
             "3. Delete store\n"
             "4. Search store\n"
         ))
-    return choice
+    if choice == 1:
+        enter_store(conn)
+    elif choice == 2:
+        update_store(conn)
+    elif choice == 3:
+        delete_store(conn)
+    elif choice == 4:
+        search_store(conn)
 
-def reports_choice():
+def reports_choice(conn):
     choice = -1
     while choice < 1 or choice > 3:
         choice = int(input(
@@ -102,7 +91,15 @@ def reports_choice():
             "2. Store/Product Inventory Report\n"
             "3. Customer Total Purchase Report\n"
         ))
-    return choice
+    if choice == 1:
+        sales_report(conn)
+    elif choice == 2:
+        inverntory_report(conn)
+    elif choice == 3:
+        customer_report(conn)
+
+
+
 
 def read_string(prompt):
     """ 
