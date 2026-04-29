@@ -376,5 +376,157 @@ def search_discount(conn):
     except Exception as err:
         print("Search failed:", err)
 
+
+def enter_store(conn):
+    StoreID = read_int("Store ID: ")
+    ManagerID = read_int("ManagerID: ")
+    store_address = read_string("Address: ")
+    phone_number = read_string("Phone Number: ")
+
+    sql = "INSERT INTO Store VALUES (%s, %s, %s, %s)"
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+
+        lines = cur.execute(sql, (StoreID, ManagerID, store_address,
+                                  phone_number))
+        if lines != 1:
+            raise Exception("Insert failed")
+
+    except Exception as err:
+        print("Store not added:", err)
+        conn.rollback()
+    else:
+        conn.commit()
+        print("Store added successfully")
+
+
+def update_store(conn):
+    StoreID = read_int("Store ID: ")
+    ManagerID = input("New ManagerID: ")
+    store_address = input("New Address: ")
+    phone_number = input("New Phone: ")
+
+    updates = []
+    values = []
+
+    if ManagerID:
+        updates.append("ManagerID = %s")
+        values.append(int(ManagerID))
+    if store_address:
+        updates.append("store_address = %s")
+        values.append(store_address)
+    if phone_number:
+        updates.append("phone_number = %s")
+        values.append(phone_number)
+    if not updates:
+        print("No updates provided")
+        return
+
+    sql = f"UPDATE Store SET {', '.join(updates)} WHERE StoreID = %s"
+    values.append(StoreID)
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+
+        lines = cur.execute(sql, values)
+        if lines != 1:
+            raise Exception("Update failed")
+
+    except Exception as err:
+        print("Update failed:", err)
+        conn.rollback()
+    else:
+        conn.commit()
+        print("Store updated successfully")
+
+
+def delete_store(conn):
+    StoreID = read_int("StoreID to delete: ")
+
+    sql = "DELETE FROM Store WHERE StoreID = %s"
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+
+        lines = cur.execute(sql, (StoreID,))
+        if lines != 1:
+            raise Exception("Delete failed")
+
+    except Exception as err:
+        print("Delete failed:", err)
+        conn.rollback()
+    else:
+        conn.commit()
+        print("Store deleted successfully")
+
+
+def search_store(conn):
+    StoreID = read_int("StoreID to search: ")
+
+    sql = "SELECT * FROM Store WHERE StoreID = %s"
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (StoreID,))
+        result = cur.fetchone()
+
+        if result:
+            print("Store Found:", result)
+        else:
+            print("No store found")
+
+    except Exception as err:
+        print("Search failed:", err)
+
+
+def sales_report(conn):
+    start_date = read_string("Start date (YYYY-MM-DD): ")
+    end_date = read_string("End date (YYYY-MM-DD): ")
+
+    sql = """
+        SELECT SUM(price_total)
+        FROM Transaction
+        WHERE purchase_date BETWEEN %s AND %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (start_date, end_date))
+        result = cur.fetchone()
+
+        total = result[0] if result[0] else 0
+        print("Total Sales:", total)
+
+    except Exception as err:
+        print("Report failed:", err)
+
+
+def customer_report(conn):
+    customer_id = read_int("CustomerID: ")
+    start_date = read_string("Start date (YYYY-MM-DD): ")
+    end_date = read_string("End date (YYYY-MM-DD): ")
+
+    sql = """
+        SELECT SUM(price_total)
+        FROM Transaction
+        WHERE CustomerID = %s
+        AND purchase_date BETWEEN %s AND %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (customer_id, start_date, end_date))
+        result = cur.fetchone()
+
+        total = result[0] if result[0] else 0
+        print("Total Customer Purchases:", total)
+
+    except Exception as err:
+        print("Report failed:", err)
+
 if __name__ == '__main__':
     main()
