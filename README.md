@@ -41,3 +41,33 @@ MuskieCo
 - Find specific discount details
 - Input : discountID
 - Output : Discount Details
+
+## Colin Toghill
+- Implemented stores and reports
+- Each entity has a dedicated set of functions that use similar transaction management as above.
+
+## Store Operations
+1.) Operation: Enter Store 
+- Input: StoreID, ManagerID, store_address, phone_number 
+- Output: Confirmation 
+2.) Operation: Update Store 
+- Input: StoreID, Fields that were updated 
+- Output: Confirmation 
+3.) Operation: Delete Store 
+- Input: StoreID 
+- Output: Confirmation 
+4.) Operation: Search Store 
+- Input: StoreID 
+- Output: Store details
+
+## Reports
+1.)  Operation: Sales Report 
+- Input: date_range  
+- Output: total sales (price_total summed from give range of dates) 
+2.)  Operation: Store/Product Inventory Report 
+- Input: StoreID, ProductID 
+- Output: All inventory records from that store or inventory from all stores of a 
+specific product 
+3.)  Operation: Customer Total Purchase Report 
+- Input: CustomerID, date_range 
+- Output: Total purchase amount
