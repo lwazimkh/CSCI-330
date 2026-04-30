@@ -23,6 +23,13 @@ def main():
         elif choice == 6:
             staff_operation(conn)
         elif choice == 7:
+            inventory_operation(conn)
+        elif choice == 8:
+            rewards_operation(conn)
+        elif choice == 9:
+            transaction_operation(conn)
+
+        elif choice == 10:
             break
     # close DB connection
     conn.close()
@@ -55,7 +62,7 @@ def get_user_choice():
     """
 
     choice = -1
-    while choice < 1 or choice > 7:
+    while choice < 1 or choice > 10:
         choice = int(input("Welcome to MuskieCo!\n" +
                                 "Which task would you like to perform?\n" +
                                 "1. Enter/Update/Delete/Search for a Product\n" +
@@ -64,7 +71,10 @@ def get_user_choice():
                                 "4. Reports\n" +
                                 "5. Enter/Update/Delete/Search for a Customer\n" +
                                 "6. Enter/Update/Delete/Search for a Staff\n" +
-                                "7. Exit.\n"
+                                "7. Manage Inventory\n" +
+                                "8. Rewards\n" +
+                                "9. Manage Transactions\n" +
+                                "10. Exit.\n"
                     ))
 
     return choice
@@ -946,7 +956,309 @@ def delete_staff(conn):
     else:
         conn.commit()
         print(f"  Success! StaffID {staff_id} and their transaction records have been removed.")
- 
+
+
+# Inventory operation that holds all possible operations that can be performed
+def inventory_operation(conn):
+    """
+    Inventory Operations
+    """
+    choice = -1
+    while choice < 1 or choice > 3:
+        choice = int(input("What would you like to do with the Inventory:\n" +
+                                "1. Increase Inventory\n" +
+                                "2. Decrease Inventory\n" +
+                                "3. Check Inventory\n"
+                    ))
+    if choice == 1:
+        increase_inventory(conn)
+    elif choice == 2:
+        decrease_inventory(conn)
+    elif choice == 3:
+        check_inventory(conn)
+
+
+# Increase Inventory
+def increase_inventory(conn):
+    inventory_id = read_int("Inventory ID: ")
+    store_id = read_int("Store ID: ")
+    amount = read_int("Amount to increase: ")
+
+    sql = """
+    INSERT INTO Inventory (InventoryID, Quantity, StoreID)
+    VALUES (%s, %s, %s)
+    ON DUPLICATE KEY UPDATE Quantity = Quantity + %s
+    """
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+        cur.execute(sql, (inventory_id, amount, store_id, amount))
+        conn.commit()
+        print("\nInventory increased.\n")
+    except Exception as err:
+        print("\nFailed to increase inventory: \n", err)
+        conn.rollback()
+
+
+# Decrease Inventory
+def decrease_inventory(conn):
+    inventory_id = read_int("Inventory ID: ")
+    store_id = read_int("Store ID: ")
+    amount = read_int("Amount to decrease: ")
+
+    sql = """
+    UPDATE Inventory
+    SET Quantity = Quantity - %s
+    WHERE InventoryID = %s AND StoreID = %s
+    """
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+        rows = cur.execute(sql, (amount, inventory_id, store_id))
+
+        if rows != 1:
+            raise Exception("No matching inventory found.")
+
+        conn.commit()
+        print("Inventory decreased.")
+    except Exception as err:
+        print("Failed to decrease inventory: \n", err)
+        conn.rollback()
+
+
+# Check Inventory
+def check_inventory(conn):
+    inventory_id = read_int("Inventory ID: ")
+
+    sql = "SELECT Quantity FROM Inventory WHERE InventoryID = %s"
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (inventory_id,))
+        result = cur.fetchone()
+
+        if result:
+            print(f"Quantity: {result[0]}")
+        else:
+            print("\nInventory not found.\n")
+    except Exception as err:
+        print("\nFailed to check inventory: \n", err)
+
+
+# Rewards operations that holds all possible operations that can be performed
+def rewards_operation(conn):
+    """
+    Rewards Operations
+    """
+    choice = -1
+    while choice < 1 or choice > 2:
+        choice = int(input("What would you like to do with the Rewards:\n" +
+                                "1. Generate Member Rewards\n" +
+                                "2. Generate Employee Rewards\n"
+                    ))
+    if choice == 1:
+        generate_member_rewards(conn)
+    elif choice == 2:
+        generate_employee_rewards(conn)
+
+
+# Generate Member Rewards
+def generate_member_rewards(conn):
+    month = read_int("Enter month (1-12): ")
+    year = read_int("Enter year: ")
+
+    sql = """
+    SELECT DISTINCT m.CustomerID
+    FROM Member m
+    JOIN Transactions t ON m.CustomerID = t.CustomerID
+    WHERE MONTH(t.purchase_date) = %s
+    AND YEAR(t.purchase_date) = %s
+    AND m.active_status = 1
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (month, year))
+        results = cur.fetchall()
+
+        if results:
+            print("Eligible Members:")
+            for row in results:
+                print(f"CustomerID: {row[0]}")
+        else:
+            print("No eligible members.")
+    except Exception as err:
+        print("Failed to generate rewards:", err)
+
+
+# Generate Employee Rewards
+def generate_employee_rewards(conn):
+    quarter = read_int("Enter quarter (1-4): ")
+    year = read_int("Enter year: ")
+
+    sql = """
+    SELECT DISTINCT StaffID
+    FROM Transactions
+    WHERE QUARTER(purchase_date) = %s
+    AND YEAR(purchase_date) = %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (quarter, year))
+        results = cur.fetchall()
+
+        if results:
+            print("\nEligible Employees:\n")
+            for row in results:
+                print(f"StaffID: {row[0]}")
+        else:
+            print("\nNo eligible employees.\n")
+    except Exception as err:
+        print("\nFailed to generate employee rewards: \n", err)
+
+
+# Transaction operation that holds all possible operations that can be performed
+def transaction_operation(conn):
+    """
+    Transaction Operations
+    """
+    choice = -1
+    while choice < 1 or choice > 4:
+        choice = int(input("What would you like to do with the Transaction:\n" +
+                                "1. Create a Transaction\n" +
+                                "2. Add Item to a Transaction\n" +
+                                "3. Calculate Transaction Total\n" +
+                                "4. View Transaction Details\n"
+                    ))
+    if choice == 1:
+        create_transaction(conn)
+    elif choice == 2:
+        add_item_to_transaction(conn)
+    elif choice == 3:
+        calculate_transaction_total(conn)
+    elif choice == 4:
+        view_transaction_details(conn)
+
+
+# Create Transaction
+def create_transaction(conn):
+    transaction_id = read_int("Transaction ID: ")
+    date = read_string("Date (YYYY-MM-DD): ")
+    total = read_float("Total amount: ")
+    customer_id = read_int("Customer ID: ")
+    staff_id = read_int("Staff ID: ")
+    store_id = read_int("Store ID: ")
+
+    sql = """
+    INSERT INTO Transactions
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+        rows = cur.execute(sql, (transaction_id, date, total, customer_id, staff_id, store_id))
+
+        if rows != 1:
+            raise Exception("\nTransaction insertion failed.\n")
+
+        conn.commit()
+        print("\nTransaction created.\n")
+    except Exception as err:
+        print("\nFailed to create transaction: \n", err)
+        conn.rollback()
+
+
+# Add item to a transaction
+def add_item_to_transaction(conn):
+    transaction_id = read_int("Transaction ID: ")
+    product_id = read_int("Product ID: ")
+    amount = read_int("Quantity: ")
+
+    sql = """
+    INSERT INTO Quantity (TransactionID, ProductID, Amount)
+    VALUES (%s, %s, %s)
+    """
+
+    try:
+        conn.begin()
+        cur = conn.cursor()
+        rows = cur.execute(sql, (transaction_id, product_id, amount))
+
+        if rows != 1:
+            raise Exception("\nInsert failed.\n")
+
+        conn.commit()
+        print("\nItem added to transaction.\n")
+    except Exception as err:
+        print("\nFailed to add item:\n", err)
+        conn.rollback()
+
+
+# Calculate Transaction total
+def calculate_transaction_total(conn):
+    transaction_id = read_int("Transaction ID: ")
+    discount_id = read_int("Discount ID: \n")
+
+    sql = """
+    SELECT SUM(p.sell_price * q.Amount) - d.discount_amount AS Final_Total
+    FROM Quantity q
+    JOIN Product p ON q.ProductID = p.ProductID
+    JOIN Discount d ON d.DiscountID = %s
+    WHERE q.TransactionID = %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (discount_id, transaction_id))
+        result = cur.fetchone()
+
+        if result and result[0] is not None:
+            print(f"Final Total: {result[0]}")
+        else:
+            print("\nNo transaction data found.\n")
+    except Exception as err:
+        print("\nFailed to calculate total:\n", err)
+
+
+# View Transaction Details    
+def view_transaction_details(conn):
+    transaction_id = read_int("Enter Transaction ID: ")
+
+    sql = """
+    SELECT t.TransactionID, t.purchase_date, t.price_total,
+           p.Name, q.Amount
+    FROM Transactions t
+    JOIN Quantity q ON t.TransactionID = q.TransactionID
+    JOIN Product p ON q.ProductID = p.ProductID
+    WHERE t.TransactionID = %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (transaction_id,))
+        results = cur.fetchall()
+
+        if results:
+            print("\nTransaction Details:")
+            for row in results:
+                print(f"""
+Transaction ID: {row[0]}
+Date: {row[1]}
+Total Price: {row[2]}
+Product Name: {row[3]}
+Quantity: {row[4]}
+-----------------------------""")
+                print("\n")
+        else:
+            print("\nNo transaction found.\n")
+
+    except Exception as err:
+        print("\nFailed to retrieve transaction details:\n", err)
+
 
 if __name__ == '__main__':
     main()
