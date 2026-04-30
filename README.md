@@ -1,4 +1,4 @@
-### CSCI-330
+### CSCI-335
 Database Project
 MuskieCo
 
@@ -112,3 +112,48 @@ specific product
 - Input: StaffID
 - Output: Confirmed deletion of staff
 
+## Lwazi Mkhwanazi
+- Implemented Inventory, Reward, and Transaction operations
+- Each operation is divided into separate functions which all have consistent transaction management
+
+## Inventory Operations
+1. Increase Inventory
+- Add/Update inventory stock
+- Input: InventoryID, StoreID, amount
+- Output: Confirmation of inventory increase
+2. Decrease Inventory
+- Reduce inventory stock for a specific store and item
+- Input: InventoryID, StoreID, amount
+- Output: Confirmation of inventory decrease
+3. Check Inventory
+- Input: InventoryID
+- Output: Quantity available
+
+## Rewards Operations
+1. Generate Member Rewards
+- Identify active members eligible for rewards based on transaction activity
+- Input: Month, Year
+- Output: List of eligible CustomerIDs
+2. Generate Employee Rewards
+- Identify employees eligible for rewards based on transactions within a specific quarter
+- Input: Quarter, Year
+- Output: List of eligible StaffIDs
+
+## Transaction Operations
+1. Create Transaction
+- Insert a new transaction record into the database
+- Input: TransactionID, date, total, CustomerID, StaffID, StoreID
+- Output: Confirmation of transaction creation
+2. Add Item to Transaction
+- Add items to a transaction via the Quantity table
+- Input: TransactionID, ProductID, Amount
+- Output: Confirmation of item added
+3. Calculate Transaction Total
+- Calculate transaction total using product pride and applied discount
+- Input: TransactionID, DiscountID
+- Output: Final calculated total
+4. View Transaction Details
+- Retrieve full transaction breakdown
+- Input: TransactionID
+- Output: Transaction details like date, total price, product names, and quantities
+  
