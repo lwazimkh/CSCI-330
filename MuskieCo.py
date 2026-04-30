@@ -110,7 +110,7 @@ def reports_choice(conn):
     if choice == 1:
         sales_report(conn)
     elif choice == 2:
-        inverntory_report(conn)
+        inventory_report(conn)
     elif choice == 3:
         customer_report(conn)
 
@@ -587,6 +587,42 @@ def customer_report(conn):
 
     except Exception as err:
         print("Report failed:", err)
+
+# Produces a report for a store/item inventory
+def inventory_report(conn):
+    """
+    Store/Product Inventory Report
+    Displays all products and their quantities for a specific store
+    """
+    store_id = read_int("Enter Store ID: ")
+
+    sql = """
+    SELECT p.ProductID, p.Name, i.Quantity
+    FROM Product p
+    JOIN Inventory i
+        ON p.InventoryID = i.InventoryID
+    WHERE i.StoreID = %s
+    """
+
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (store_id,))
+        results = cur.fetchall()
+
+        if results:
+            print("\nInventory Report:")
+            for row in results:
+                print(f"""
+        Product ID: {row[0]}
+        Name: {row[1]}
+        Quantity: {row[2]}
+        """)
+            print("\n")
+        else:
+            print("No inventory found for this store.")
+
+    except Exception as err:
+        print("Failed to generate inventory report:", err)
 
 
 def customer_operation(conn):
